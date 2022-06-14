@@ -35,13 +35,9 @@ kiwisolver==1.4.3
 matplotlib==3.5.2
     # via -r requirements.in
 numpy==1.22.4
-    # via
-    #   matplotlib
-    #   pandas
+    # via matplotlib
 packaging==21.3
     # via matplotlib
-pandas==1.4.2
-    # via -r requirements.in
 pillow==9.1.1
     # via matplotlib
 pyparsing==3.0.9
@@ -52,9 +48,6 @@ python-dateutil==2.8.2
     # via
     #   arrow
     #   matplotlib
-    #   pandas
-pytz==2022.1
-    # via pandas
 rfc3986[idna2008]==1.5.0
     # via httpx
 six==1.16.0

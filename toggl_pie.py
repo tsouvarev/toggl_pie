@@ -8,9 +8,9 @@ from typing import Optional
 
 import arrow
 import httpx
+import matplotlib.pyplot as plt
 import typer
 from funcy import group_by_keys, walk_values
-from pandas import DataFrame
 from whatever import that
 
 HOURS_IN_WORKDAY = 8
@@ -40,10 +40,8 @@ def png(
     filename: str = "res.png",
 ):
     fulltime_durations = _get_fulltime_durations(since, until, workdays)
-    df = DataFrame(fulltime_durations.values(), index=fulltime_durations)
-    plot = df.plot.pie(y=0, legend=False, autopct="%.2f%%")
-    plot.yaxis.set_label_text("")
-    plot.figure.savefig(filename)
+    plt.pie(fulltime_durations.values(), labels=fulltime_durations, autopct="%0.2f%%")
+    plt.savefig(filename)
 
 
 def _get_fulltime_durations(since, until, workdays):
