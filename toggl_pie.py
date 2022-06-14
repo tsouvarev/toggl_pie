@@ -93,7 +93,7 @@ def _group_entries_by_tag(entries):
 
 
 def _add_lost_minutes(tags_with_hours, since, until, workdays):
-    days_between = workdays or (until - since).days
+    days_between = workdays or (until - since).days or 1
     lost_minutes = days_between * HOURS_IN_WORKDAY - sum(tags_with_hours.values())
     print(f"Workdays: {days_between}")
     return tags_with_hours | {"без разметки": lost_minutes}
