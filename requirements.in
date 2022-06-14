@@ -1,6 +1,7 @@
 arrow
 funcy
 httpx
+matplotlib
 pandas
 typer
 whatever
