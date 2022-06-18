@@ -2,5 +2,6 @@ arrow
 funcy
 httpx
 matplotlib
+python-dateutil
 typer
 whatever

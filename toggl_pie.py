@@ -10,6 +10,7 @@ import arrow
 import httpx
 import matplotlib.pyplot as plt
 import typer
+from dateutil.relativedelta import relativedelta
 from funcy import group_by_keys, walk_values
 from whatever import that
 
@@ -30,6 +31,20 @@ def csv(
         wr = writer(f)
         wr.writerows(fulltime_durations.items())
         print(f"\n{f.getvalue()}")
+
+
+@app.command()
+def report(date: Optional[datetime] = typer.Argument(None)):
+    date = _normalize(date, default=_get_now)
+    entries = _get_entries(since=date.floor("day"), until=date.ceil("day"))
+
+    for entry in entries:
+        descr = entry["description"]
+        duration = relativedelta(seconds=entry["duration"])
+        print(
+            f"- {descr} / "
+            f"{duration.hours:0>2}:{duration.minutes:0>2}:{duration.seconds:0>2}"
+        )
 
 
 @app.command()
@@ -67,7 +82,7 @@ def _localize(dt):
 
 
 def _get_midnight():
-    return _get_now().replace(hour=0, minute=0, second=0, microsecond=0)
+    return _get_now().floor("day")
 
 
 def _get_now():
