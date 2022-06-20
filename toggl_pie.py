@@ -40,11 +40,22 @@ def report(date: Optional[datetime] = typer.Argument(None)):
     entries = _group_entries_by_description(entries)
 
     for descr, duration_seconds in entries.items():
-        duration = relativedelta(seconds=duration_seconds)
-        print(
-            f"- {descr} / "
-            f"{duration.hours:0>2}:{duration.minutes:0>2}:{duration.seconds:0>2}"
-        )
+        _print_time_entry(descr, duration_seconds)
+
+
+@app.command()
+def show(
+    tag: str,
+    since: Optional[datetime] = typer.Argument(None),
+    until: Optional[datetime] = typer.Argument(None),
+):
+    since = _normalize(since, default=_get_midnight)
+    until = _normalize(until, default=_get_now)
+
+    entries = _get_entries(since, until)
+    tagged_entries = filter(lambda e: tag in e["tags"], entries)
+    for entry in tagged_entries:
+        _print_time_entry(entry["description"], entry["duration"])
 
 
 @app.command()
@@ -120,6 +131,14 @@ def _add_lost_minutes(tags_with_hours, since, until, workdays):
     lost_minutes = days_between * HOURS_IN_WORKDAY - sum(tags_with_hours.values())
     print(f"Workdays: {days_between}")
     return tags_with_hours | {"без разметки": lost_minutes}
+
+
+def _print_time_entry(descr, duration_seconds):
+    duration = relativedelta(seconds=duration_seconds)
+    print(
+        f"- {descr} / "
+        f"{duration.hours:0>2}:{duration.minutes:0>2}:{duration.seconds:0>2}"
+    )
 
 
 if __name__ == "__main__":
