@@ -11,7 +11,7 @@ import httpx
 import matplotlib.pyplot as plt
 import typer
 from dateutil.relativedelta import relativedelta
-from funcy import group_by_keys, walk_values
+from funcy import group_by, group_by_keys, walk_values
 from whatever import that
 
 HOURS_IN_WORKDAY = 8
@@ -37,10 +37,10 @@ def csv(
 def report(date: Optional[datetime] = typer.Argument(None)):
     date = _normalize(date, default=_get_now)
     entries = _get_entries(since=date.floor("day"), until=date.ceil("day"))
+    entries = _group_entries_by_description(entries)
 
-    for entry in entries:
-        descr = entry["description"]
-        duration = relativedelta(seconds=entry["duration"])
+    for descr, duration_seconds in entries.items():
+        duration = relativedelta(seconds=duration_seconds)
         print(
             f"- {descr} / "
             f"{duration.hours:0>2}:{duration.minutes:0>2}:{duration.seconds:0>2}"
@@ -105,6 +105,14 @@ def _group_entries_by_tag(entries):
         lambda e: sum(x["duration"] for x in e) / 60 / 60, entries_by_tag
     )
     return tags_with_hours
+
+
+def _group_entries_by_description(entries):
+    entries_by_descr = group_by(that["description"], entries)
+    entries_summed = walk_values(
+        lambda e: sum(x["duration"] for x in e), entries_by_descr
+    )
+    return entries_summed
 
 
 def _add_lost_minutes(tags_with_hours, since, until, workdays):
